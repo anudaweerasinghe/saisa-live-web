@@ -43,6 +43,10 @@ myApp.controller('scores-controller', function ($scope, $http) {
             $scope.upcomingGames[i].startTime = ts.toLocaleString();
         }
 
+        if($scope.liveGames.length===0&&$scope.upcomingGames.length!==0){
+            $scope.changeStatus(0);
+        }
+
     }, function errorCallback(response) {
         // The next bit of code is asynchronously tricky.
         alert("Error Retrieving Data");
@@ -62,6 +66,19 @@ myApp.controller('scores-controller', function ($scope, $http) {
 
 
             $scope.completedGames[i].startTime = ts.toLocaleString();
+
+            if($scope.completedGames[i].result===1){
+                $scope.completedGames[i].result = $scope.completedGames[i].team1.team.name+" Won";
+            }else if($scope.completedGames[i].result===2){
+                $scope.completedGames[i].result = $scope.completedGames[i].team2.team.name+" Won";
+            }else{
+                $scope.completedGames[i].result = "No Result";
+
+            }
+        }
+
+        if($scope.liveGames.length===0&&$scope.upcomingGames.length===0){
+            $scope.changeStatus(2);
         }
     }, function errorCallback(response) {
         // The next bit of code is asynchronously tricky.
@@ -96,6 +113,7 @@ myApp.controller('scores-controller', function ($scope, $http) {
 myApp.controller('livestreams-controller', function ($scope, $http, $sce) {
 
     $scope.live = true;
+    $scope.pastFootage = [];
 
     $http({
         method: 'GET',
@@ -109,6 +127,7 @@ myApp.controller('livestreams-controller', function ($scope, $http, $sce) {
             $scope.liveStreams[i].url = $sce.trustAsResourceUrl("https://www.youtube.com/embed/"+$scope.liveStreams[i].url.replace("https://youtu.be/",""));
         }
         $scope.streams = $scope.liveStreams;
+
 
     }, function errorCallback(response) {
         // The next bit of code is asynchronously tricky.
@@ -126,6 +145,10 @@ myApp.controller('livestreams-controller', function ($scope, $http, $sce) {
         for(var i=0; i<$scope.pastFootage.length;i++){
 
             $scope.pastFootage[i].url = $sce.trustAsResourceUrl("https://www.youtube.com/embed/"+$scope.pastFootage[i].url.replace("https://youtu.be/",""));
+        }
+
+        if($scope.liveStreams.length===0){
+            $scope.changeStatus();
         }
 
     }, function errorCallback(response) {
@@ -261,6 +284,8 @@ myApp.controller('events-controller', function ($scope, $http, $sce) {
         }
         $scope.events = $scope.liveEvents;
 
+
+
     }, function errorCallback(response) {
         // The next bit of code is asynchronously tricky.
         alert("Error Retrieving Data");
@@ -278,7 +303,11 @@ myApp.controller('events-controller', function ($scope, $http, $sce) {
 
             let ts = new Date($scope.archivedEvents[i].startDate*1000);
 
-            $scope.archivedEvents[i].startDate = ts.toLocaleDateString();        }
+            $scope.archivedEvents[i].startDate = ts.toLocaleDateString();
+        }
+        if($scope.liveEvents.length===0){
+            $scope.changeStatus();
+        }
 
     }, function errorCallback(response) {
         // The next bit of code is asynchronously tricky.
@@ -314,5 +343,120 @@ myApp.controller('events-controller', function ($scope, $http, $sce) {
         });
 
     };
+
+});
+
+myApp.controller('media-controller', function ($scope, $http) {
+
+    $scope.currentStatus = 1;
+    $scope.accessGranted = false;
+
+    $http({
+        method: 'GET',
+        url: baseUrl+'/media?tournamentId=0&type=2'
+    }).then(function successCallback(response) {
+
+        $scope.videos=response.data;
+
+        for(var i=0; i<$scope.videos.length;i++){
+
+            let ts = new Date($scope.videos[i].timestamp*1000);
+
+
+            $scope.videos[i].timestamp = ts.toLocaleString();
+        }
+
+        $scope.media = $scope.videos;
+
+    }, function errorCallback(response) {
+        // The next bit of code is asynchronously tricky.
+        alert("Error Retrieving Data");
+
+    });
+
+    $http({
+        method: 'GET',
+        url: baseUrl+'/media?tournamentId=0&type=3'
+    }).then(function successCallback(response) {
+
+        $scope.news=response.data;
+
+        for(var i=0; i<$scope.news.length;i++){
+
+            let ts = new Date($scope.news[i].timestamp*1000);
+
+
+            $scope.news[i].timestamp = ts.toLocaleString();
+        }
+
+
+    }, function errorCallback(response) {
+        // The next bit of code is asynchronously tricky.
+        alert("Error Retrieving Data");
+
+    });
+
+    $scope.watchLive = function (url) {
+        window.open(url);
+
+    };
+
+    $scope.viewNews = function (title, coverImg, text, timeStamp) {
+        $scope.newsTitle = title;
+        $scope.newsImg = coverImg;
+        $scope.newsText = text;
+        $scope.newsTime = timeStamp;
+
+
+    };
+
+    $scope.changeStatus = function(newStatus){
+
+        $scope.currentStatus = newStatus;
+
+        if(newStatus===1){
+            if($scope.accessGranted){
+                $scope.media = $scope.photos;
+
+            }
+
+        }else if(newStatus===2){
+            $scope.media = $scope.videos;
+        }else{
+            $scope.media = $scope.news;
+        }
+
+
+    };
+
+    $scope.checkAccessCode = function(){
+        $http({
+            method: 'GET',
+            url: baseUrl+'/media?tournamentId=0&type=1&accessCode='+$scope.accessCode
+        }).then(function successCallback(response) {
+
+            $scope.photos=response.data;
+            $scope.accessGranted=true;
+            $scope.responseMsg = "Access Code Successfully Validated! Press the 'Back' button to view photos.";
+
+            for(var i=0; i<$scope.photos.length;i++){
+
+                let ts = new Date($scope.photos[i].timestamp*1000);
+
+
+                $scope.photos[i].timestamp = ts.toLocaleString();
+            }
+
+            $scope.media = $scope.photos;
+
+        }, function errorCallback(response) {
+            // The next bit of code is asynchronously tricky.
+            $scope.responseMsg = "Incorrect Access Code! Please Try Again..."
+
+        });
+
+    };
+
+
 
 });

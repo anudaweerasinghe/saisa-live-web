@@ -148,6 +148,16 @@
     <!-- Page content -->
     <div class="container-fluid mt--6">
       <div class="row">
+        <div class="col-xl-12" ng-if="events.length===0">
+          <div class="card">
+            <div class="card-header border-0">
+              <p>Nothing to see here right now.</p>
+              <br>
+              <p>Come back and check later...</p>
+
+            </div>
+          </div>
+        </div>
         <div class="col-xl-4" ng-repeat="items in events | orderBy: reverse:true">
           <div class="card">
             <div class="card-header border-0">
@@ -159,7 +169,7 @@
                   <br>
                 </div>
                 <div class="col-md-3 text-right">
-                  <img src="{{items.logo}}" height="50px">
+                  <img src="{{items.logo}}" height="70px" style="max-width: 100%">
                   <br>
                   <br>
 
@@ -222,7 +232,7 @@
 
                   <tr ng-repeat="item in items.participants | orderBy:'standing'">
                     <th scope="row">
-                      <img src="{{item.team.logo}}" height="25px">
+                      <img src="{{item.team.logo}}" height="25px" >
                     </th>
                     <th scope="row">
                       {{item.team.name}}

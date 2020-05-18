@@ -147,6 +147,16 @@
     <!-- Page content -->
     <div class="container-fluid mt--6">
       <div class="row">
+        <div class="col-xl-12" ng-if="streams.length===0">
+          <div class="card">
+            <div class="card-header border-0">
+              <p>Nothing to see here right now.</p>
+              <br>
+              <p>Come back and check later...</p>
+
+            </div>
+          </div>
+        </div>
         <div class="col-xl-6" ng-repeat="items in streams | orderBy: reverse:true">
         <div class="card">
           <div class="card-header border-0">

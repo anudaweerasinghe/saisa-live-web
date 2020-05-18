@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="assets/css/argon.css?v=1.2.0" type="text/css">
 </head>
 
-<body>
+<body  ng-app="myApp" ng-controller="media-controller">
   <!-- Sidenav -->
   <nav class="sidenav navbar navbar-vertical  fixed-left  navbar-expand-xs navbar-brand bg-white" id="sidenav-main">
     <div class="scrollbar-inner">
@@ -127,12 +127,20 @@
                 </ol>
               </nav>
             </div>
-            <div class="col-lg-6 col-5 text-right">
-              <a href="#" class="btn btn-sm btn-neutral">Photos</a>
-              <a href="#" class="btn btn-sm btn-primary">Videos</a>
-              <a href="#" class="btn btn-sm btn-primary">News</a>
-
-
+            <div class="col-lg-6 col-5 text-right" ng-if="currentStatus===1">
+              <a href="#" class="btn btn-sm btn-neutral" ng-click="changeStatus(1)">Photos</a>
+              <a href="#" class="btn btn-sm btn-primary" ng-click="changeStatus(2)">Videos</a>
+              <a href="#" class="btn btn-sm btn-primary" ng-click="changeStatus(3)">News</a>
+            </div>
+            <div class="col-lg-6 col-5 text-right" ng-if="currentStatus===2">
+              <a href="#" class="btn btn-sm btn-primary" ng-click="changeStatus(1)">Photos</a>
+              <a href="#" class="btn btn-sm btn-neutral" ng-click="changeStatus(2)">Videos</a>
+              <a href="#" class="btn btn-sm btn-primary" ng-click="changeStatus(3)">News</a>
+            </div>
+            <div class="col-lg-6 col-5 text-right" ng-if="currentStatus===3">
+              <a href="#" class="btn btn-sm btn-primary" ng-click="changeStatus(1)">Photos</a>
+              <a href="#" class="btn btn-sm btn-primary" ng-click="changeStatus(2)">Videos</a>
+              <a href="#" class="btn btn-sm btn-neutral" ng-click="changeStatus(3)">News</a>
             </div>
           </div>
           <!-- Card stats -->
@@ -145,124 +153,115 @@
     <!-- Page content -->
     <div class="container-fluid mt--6">
       <div class="row">
-        <div class="col-xl-4">
+
+        <div class="col-xl-12" ng-if="accessGranted===false&&currentStatus===1">
+          <div class="card">
+            <div class="card-header border-0">
+              <p>For privacy reasons, you need an access code to gain access to Photos from SAISA Events.</p>
+              <br>
+              <p>Contact your school's/team's Athletic Director to get an Access Code that will grant you access</p>
+              <br>
+              <button class="btn-primary" data-toggle="modal" data-target="#accessCodeModal" style="width: 100%; border-radius: 10px; font-size: 14pt; background: #ef5350; border: #ef5350" >I Have an Access Code</button>
+
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-4" ng-repeat="items in media | orderBy: reverse:true" ng-if="accessGranted===true||currentStatus!=1">
           <div class="card">
             <div class="card-header border-0">
               <div class="row align-items-center">
                 <div class="col-md-10">
-                  <h2 class="mb-0">Day 3 - SAISA Girls Football 2020</h2>
-                  <h5 class="card-title text-uppercase text-muted mb-0">04:33 PM, Saturday 22 February 2020</h5>
+                  <h2 class="mb-0">{{items.title}}</h2>
+                  <h5 class="card-title text-uppercase text-muted mb-0">{{items.timestamp}}</h5>
                   <br>
                 </div>
 
               </div>
               <center>
-              <img src="http://142.93.212.170/covers/unnamed%20(2).jpg" height="250px">
+              <img src="{{items.coverImg}}" height="250px" style="max-width: 100%">
               </center>
               <br>
 
-              <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">View Photos
-              </button>
+              <button class="btn-primary" ng-if="currentStatus===1" style="width: 100%; border-radius: 10px; font-size: 14pt" ng-click="watchLive(items.contentUrl)">View Photos</button>
+              <button class="btn-primary" ng-if="currentStatus===2" style="width: 100%; border-radius: 10px; font-size: 14pt" ng-click="watchLive(items.contentUrl)">View Videos</button>
+              <button class="btn-primary" ng-if="currentStatus===3" data-toggle="modal" data-target="#newsModal"  style="width: 100%; border-radius: 10px; font-size: 14pt" ng-click="viewNews(items.title, items.coverImg, items.text, items.timestamp)">View News</button>
 
             </div>
 
           </div>
         </div>
-        <div class="col-xl-4">
-          <div class="card">
-            <div class="card-header border-0">
-              <div class="row align-items-center">
-                <div class="col-md-10">
-                  <h2 class="mb-0">Day 3 - SAISA Girls Football 2020</h2>
-                  <h5 class="card-title text-uppercase text-muted mb-0">04:33 PM, Saturday 22 February 2020</h5>
-                  <br>
+      </div>
+
+      <div class="modal fade" id="accessCodeModal" tabindex="-1" role="dialog" aria-labelledby="accessCodeModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title" id="accessCodeModalLabel">Enter Access Code</h1>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="table-responsive">
+                <div class="row align-items-center">
+                  <div class="col">
+                    <h5>{{responseMsg}}</h5>
+                    <input class="form-control" placeholder="Your Access Code" type="text" ng-model="accessCode">
+                  </div>
+
                 </div>
+                <br>
+                <!-- Projects table -->
 
               </div>
-              <center>
-                <img src="https://drive.google.com/uc?id=1jum3T00ehTjpf8ECqyLk6g4HdcD8V5Kh" height="250px">
-              </center>
-              <br>
-
-              <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">View Photos
-              </button>
 
             </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-neutral" data-dismiss="modal">Back</button>
+              <button type="button" class="btn btn-primary" ng-click="checkAccessCode()">Check Access Code</button>
 
+            </div>
           </div>
         </div>
-        <div class="col-xl-4">
-          <div class="card">
-            <div class="card-header border-0">
-              <div class="row align-items-center">
-                <div class="col-md-10">
-                  <h2 class="mb-0">Day 3 - SAISA Girls Football 2020</h2>
-                  <h5 class="card-title text-uppercase text-muted mb-0">04:33 PM, Saturday 22 February 2020</h5>
-                  <br>
+      </div>
+
+
+      <div class="modal fade" id="newsModal" tabindex="-1" role="dialog" aria-labelledby="newsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title" id="newsModalLabel">News Item</h1>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="table-responsive">
+                <div class="row align-items-center">
+                  <div class="col">
+                    <h1 class="mb-0" >{{newsTitle}}</h1>
+
+                    <h5 class="card-title text-uppercase text-muted mb-0">{{newsTime}}</h5>
+
+                    <img src="{{newsImg}}" width="100%">
+
+
+                    <p><br>{{newsText}}
+                      </p>
+                  </div>
+
                 </div>
+                <br>
+                <!-- Projects table -->
 
               </div>
-              <center>
-                <img src="http://142.93.212.170/covers/unnamed%20(2).jpg" height="250px">
-              </center>
-              <br>
-
-              <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">View Photos
-              </button>
 
             </div>
-
-          </div>
-        </div>
-        <div class="col-xl-4">
-          <div class="card">
-            <div class="card-header border-0">
-              <div class="row align-items-center">
-                <div class="col-md-10">
-                  <h2 class="mb-0">Day 3 - SAISA Girls Football 2020</h2>
-                  <h5 class="card-title text-uppercase text-muted mb-0">04:33 PM, Saturday 22 February 2020</h5>
-                  <br>
-                </div>
-
-              </div>
-              <center>
-                <img src="http://142.93.212.170/covers/unnamed%20(2).jpg" height="250px">
-              </center>
-              <br>
-
-              <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">View Photos
-              </button>
-
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" data-dismiss="modal">Back</button>
             </div>
-
           </div>
         </div>
-        <div class="col-xl-4">
-          <div class="card">
-            <div class="card-header border-0">
-              <div class="row align-items-center">
-                <div class="col-md-10">
-                  <h2 class="mb-0">Day 3 - SAISA Girls Football 2020</h2>
-                  <h5 class="card-title text-uppercase text-muted mb-0">04:33 PM, Saturday 22 February 2020</h5>
-                  <br>
-                </div>
-
-              </div>
-              <center>
-                <img src="http://142.93.212.170/covers/unnamed%20(2).jpg" height="250px">
-              </center>
-              <br>
-
-              <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">View Photos
-              </button>
-
-            </div>
-
-          </div>
-        </div>
-
-
-
       </div>
       <!-- Footer -->
       <footer class="footer pt-0">
