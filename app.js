@@ -92,8 +92,58 @@ myApp.controller('scores-controller', function ($scope, $http) {
 
 
 });
-// myApp.filter('reverse', function() {
-//     return function(items) {
-//         return items.slice().reverse();
-//     };
-// });
+
+myApp.controller('livestreams-controller', function ($scope, $http, $sce) {
+
+    $scope.live = true;
+
+    $http({
+        method: 'GET',
+        url: baseUrl+'/livestreams?liveNow=1&tournamentId=0'
+    }).then(function successCallback(response) {
+
+        $scope.liveStreams=response.data;
+
+        for(var i=0; i<$scope.liveStreams.length;i++){
+
+            $scope.liveStreams[i].url = $sce.trustAsResourceUrl("https://www.youtube.com/embed/"+$scope.liveStreams[i].url.replace("https://youtu.be/",""));
+        }
+        $scope.streams = $scope.liveStreams;
+
+    }, function errorCallback(response) {
+        // The next bit of code is asynchronously tricky.
+        alert("Error Retrieving Data");
+
+    });
+
+    $http({
+        method: 'GET',
+        url: baseUrl+'/livestreams?liveNow=0&tournamentId=0'
+    }).then(function successCallback(response) {
+
+        $scope.pastFootage=response.data;
+
+        for(var i=0; i<$scope.pastFootage.length;i++){
+
+            $scope.pastFootage[i].url = $sce.trustAsResourceUrl("https://www.youtube.com/embed/"+$scope.pastFootage[i].url.replace("https://youtu.be/",""));
+        }
+
+    }, function errorCallback(response) {
+        // The next bit of code is asynchronously tricky.
+        alert("Error Retrieving Data");
+
+    });
+
+    $scope.changeStatus = function(){
+
+        if(!$scope.live){
+            $scope.live=true;
+            $scope.streams = $scope.liveStreams;
+        }else{
+            $scope.live=false;
+            $scope.streams = $scope.pastFootage;
+
+        }
+    };
+
+});
