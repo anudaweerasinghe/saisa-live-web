@@ -15,7 +15,8 @@
 -->
 <!DOCTYPE html>
 <html>
-
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+<script src="app.js"></script>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -34,7 +35,7 @@
   <link rel="stylesheet" href="assets/css/argon.css?v=1.2.0" type="text/css">
 </head>
 
-<body>
+<body  ng-app="myApp" ng-controller="scores-controller">
   <!-- Sidenav -->
   <nav class="sidenav navbar navbar-vertical  fixed-left  navbar-expand-xs navbar-brand bg-white" id="sidenav-main">
     <div class="scrollbar-inner">
@@ -122,15 +123,24 @@
               <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
                 <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
                   <li class="breadcrumb-item"><a href="#"><i class="fas fa-flag"></i></a></li>
-                  <li class="breadcrumb-item"><a href="#">Scores</a></li>
+                  <li class="breadcrumb-item"><a href="#">Games & Scores</a></li>
                 </ol>
               </nav>
             </div>
-            <div class="col-lg-6 col-5 text-right">
-              <a href="#" class="btn btn-sm btn-neutral">Live</a>
-              <a href="#" class="btn btn-sm btn-primary">Fixtures</a>
-              <a href="#" class="btn btn-sm btn-primary">Results</a>
-
+            <div class="col-lg-6 col-5 text-right" ng-if="currentStatus===1">
+              <a href="#" class="btn btn-sm btn-neutral" ng-click="changeStatus(1)">Live</a>
+              <a href="#" class="btn btn-sm btn-primary" ng-click="changeStatus(0)">Fixtures</a>
+              <a href="#" class="btn btn-sm btn-primary" ng-click="changeStatus(2)">Results</a>
+            </div>
+            <div class="col-lg-6 col-5 text-right" ng-if="currentStatus===0">
+              <a href="#" class="btn btn-sm btn-primary" ng-click="changeStatus(1)">Live</a>
+              <a href="#" class="btn btn-sm btn-neutral" ng-click="changeStatus(0)">Fixtures</a>
+              <a href="#" class="btn btn-sm btn-primary" ng-click="changeStatus(2)">Results</a>
+            </div>
+            <div class="col-lg-6 col-5 text-right" ng-if="currentStatus===2">
+              <a href="#" class="btn btn-sm btn-primary" ng-click="changeStatus(1)">Live</a>
+              <a href="#" class="btn btn-sm btn-primary" ng-click="changeStatus(0)">Fixtures</a>
+              <a href="#" class="btn btn-sm btn-neutral" ng-click="changeStatus(2)">Results</a>
             </div>
           </div>
           <!-- Card stats -->
@@ -142,17 +152,17 @@
 
     <!-- Page content -->
     <div class="container-fluid mt--6">
-      <div class="row">
-        <div class="col-xl-6">
+      <div class="row" >
+        <div class="col-xl-6" ng-repeat="items in games | orderBy: reverse:true">
         <div class="card">
           <div class="card-header border-0">
             <div class="row align-items-center">
               <div class="col-md-10">
-                <h2 class="mb-0">SAISA Boys Basketball 2020</h2>
-                <h5 class="card-title text-uppercase text-muted mb-0">Championship Match 05:20PM - Saturday 22nd of February 2020</h5>
+                <h2 class="mb-0">{{items.tournament.name}}</h2>
+                <h5 class="card-title text-uppercase text-muted mb-0">{{items.gameDescription}} - {{items.startTime}}</h5>
                 <br>
               </div>
-              <div class="col-md-2 text-right">
+              <div class="col-md-2 text-right" ng-if="currentStatus===1">
                 <h2 class="mb-0" style="color: red">LIVE</h2>
                 <br>
 
@@ -161,270 +171,40 @@
 
             <div class="row">
               <div class="col-sm-2">
-                <img src="http://142.93.212.170/logos/aisd.png" width="50px">
+                <img src={{items.team1.team.logo}} height="35px">
               </div>
               <div class="col-sm-6">
-                <span class="h2 font-weight-bold mb-0">AISD</span>
+                <span class="h2 font-weight-bold mb-0">{{items.team1.team.name}}</span>
               </div>
               <div class="col-sm-4 text-right">
-                <span class="h2 font-weight-bold mb-0">24</span>
+                <span class="h2 font-weight-bold mb-0">{{items.team1Score}}</span>
               </div>
             </div>
             <br>
             <div class="row">
               <div class="col-sm-2">
-                <img src="http://142.93.212.170/logos/osc.png" width="50px">
+                <img src={{items.team2.team.logo}} height="35px">
               </div>
               <div class="col-sm-6">
-                <span class="h2 font-weight-bold mb-0">OSC</span>
+                <span class="h2 font-weight-bold mb-0">{{items.team2.team.name}}</span>
               </div>
               <div class="col-sm-4 text-right">
-                <span class="h2 font-weight-bold mb-0">24</span>
+                <span class="h2 font-weight-bold mb-0">{{items.team2Score}}</span>
               </div>
             </div>
             <br>
 
-            <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">Watch Live
+            <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt" ng-click="watchLive(items.livestream.url)" ng-if="currentStatus===1">
+              Watch Live
+            </button>
+            <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt" ng-click="watchLive(items.livestream.url)" ng-if="currentStatus===2">
+              Replay Game Coverage
             </button>
           </div>
 
         </div>
       </div>
-        <div class="col-xl-6">
-          <div class="card">
-            <div class="card-header border-0">
-              <div class="row align-items-center">
-                <div class="col-md-10">
-                  <h2 class="mb-0">SAISA Boys Basketball 2020</h2>
-                  <h5 class="card-title text-uppercase text-muted mb-0">Championship Match 05:20PM - Saturday 22nd of February 2020</h5>
-                  <br>
-                </div>
-                <div class="col-md-2 text-right">
-                  <h2 class="mb-0" style="color: red">LIVE</h2>
-                  <br>
 
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/aisd.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">AISD</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">24</span>
-                </div>
-              </div>
-              <br>
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/osc.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">OSC</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">24</span>
-                </div>
-              </div>
-              <br>
-
-              <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">Watch Live
-              </button>
-            </div>
-
-          </div>
-        </div>
-        <div class="col-xl-6">
-          <div class="card">
-            <div class="card-header border-0">
-              <div class="row align-items-center">
-                <div class="col-md-10">
-                  <h2 class="mb-0">SAISA Boys Basketball 2020</h2>
-                  <h5 class="card-title text-uppercase text-muted mb-0">Championship Match 05:20PM - Saturday 22nd of February 2020</h5>
-                  <br>
-                </div>
-                <div class="col-md-2 text-right">
-                  <h2 class="mb-0" style="color: red">LIVE</h2>
-                  <br>
-
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/aisd.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">AISD</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">24</span>
-                </div>
-              </div>
-              <br>
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/osc.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">OSC</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">24</span>
-                </div>
-              </div>
-              <br>
-
-              <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">Watch Live
-              </button>
-            </div>
-
-          </div>
-        </div>
-        <div class="col-xl-6">
-          <div class="card">
-            <div class="card-header border-0">
-              <div class="row align-items-center">
-                <div class="col-md-10">
-                  <h2 class="mb-0">SAISA Boys Basketball 2020</h2>
-                  <h5 class="card-title text-uppercase text-muted mb-0">Championship Match 05:20PM - Saturday 22nd of February 2020</h5>
-                  <br>
-                </div>
-                <div class="col-md-2 text-right">
-                  <h2 class="mb-0" style="color: red">LIVE</h2>
-                  <br>
-
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/aisd.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">AISD</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">24</span>
-                </div>
-              </div>
-              <br>
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/osc.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">OSC</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">24</span>
-                </div>
-              </div>
-              <br>
-
-              <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">Watch Live
-              </button>
-            </div>
-
-          </div>
-        </div>
-        <div class="col-xl-6">
-          <div class="card">
-            <div class="card-header border-0">
-              <div class="row align-items-center">
-                <div class="col-md-10">
-                  <h2 class="mb-0">SAISA Boys Basketball 2020</h2>
-                  <h5 class="card-title text-uppercase text-muted mb-0">Championship Match 05:20PM - Saturday 22nd of February 2020</h5>
-                  <br>
-                </div>
-                <div class="col-md-2 text-right">
-                  <h2 class="mb-0" style="color: red">LIVE</h2>
-                  <br>
-
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/aisd.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">AISD</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">24</span>
-                </div>
-              </div>
-              <br>
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/osc.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">OSC</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">24</span>
-                </div>
-              </div>
-              <br>
-
-              <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">Watch Live
-              </button>
-            </div>
-
-          </div>
-        </div>
-        <div class="col-xl-6">
-          <div class="card">
-            <div class="card-header border-0">
-              <div class="row align-items-center">
-                <div class="col-md-10">
-                  <h2 class="mb-0">SAISA Boys Basketball 2020</h2>
-                  <h5 class="card-title text-uppercase text-muted mb-0">Championship Match 05:20PM - Saturday 22nd of February 2020</h5>
-                  <br>
-                </div>
-                <div class="col-md-2 text-right">
-                  <h2 class="mb-0" style="color: red">LIVE</h2>
-                  <br>
-
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/aisd.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">AISD</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">24</span>
-                </div>
-              </div>
-              <br>
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/osc.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">OSC</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">24</span>
-                </div>
-              </div>
-              <br>
-
-              <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">Watch Live
-              </button>
-            </div>
-
-          </div>
-        </div>
 
 
       </div>
