@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="assets/css/argon.css?v=1.2.0" type="text/css">
 </head>
 
-<body>
+<body  ng-app="myApp" ng-controller="meets-controller">
   <!-- Sidenav -->
   <nav class="sidenav navbar navbar-vertical  fixed-left  navbar-expand-xs navbar-brand bg-white" id="sidenav-main">
     <div class="scrollbar-inner">
@@ -127,11 +127,20 @@
                 </ol>
               </nav>
             </div>
-            <div class="col-lg-6 col-5 text-right">
-              <a href="#" class="btn btn-sm btn-primary">Live</a>
-              <a href="#" class="btn btn-sm btn-primary">Fixtures</a>
-              <a href="#" class="btn btn-sm btn-neutral">Results</a>
-
+            <div class="col-lg-6 col-5 text-right" ng-if="currentStatus===1">
+              <a href="#" class="btn btn-sm btn-neutral" ng-click="changeStatus(1)">Live</a>
+              <a href="#" class="btn btn-sm btn-primary" ng-click="changeStatus(0)">Fixtures</a>
+              <a href="#" class="btn btn-sm btn-primary" ng-click="changeStatus(2)">Results</a>
+            </div>
+            <div class="col-lg-6 col-5 text-right" ng-if="currentStatus===0">
+              <a href="#" class="btn btn-sm btn-primary" ng-click="changeStatus(1)">Live</a>
+              <a href="#" class="btn btn-sm btn-neutral" ng-click="changeStatus(0)">Fixtures</a>
+              <a href="#" class="btn btn-sm btn-primary" ng-click="changeStatus(2)">Results</a>
+            </div>
+            <div class="col-lg-6 col-5 text-right" ng-if="currentStatus===2">
+              <a href="#" class="btn btn-sm btn-primary" ng-click="changeStatus(1)">Live</a>
+              <a href="#" class="btn btn-sm btn-primary" ng-click="changeStatus(0)">Fixtures</a>
+              <a href="#" class="btn btn-sm btn-neutral" ng-click="changeStatus(2)">Results</a>
             </div>
           </div>
           <!-- Card stats -->
@@ -144,361 +153,87 @@
     <!-- Page content -->
     <div class="container-fluid mt--6">
       <div class="row">
-        <div class="col-xl-6">
+        <div class="col-xl-6" ng-repeat="items in meets | orderBy: reverse:true">
         <div class="card">
           <div class="card-header border-0">
             <div class="row align-items-center">
               <div class="col-md-10">
-                <h2 class="mb-0">SAISA Track and Field 2020</h2>
-                <h5 class="card-title text-uppercase text-muted mb-0">Boys 10-12 400m Finals - 08:40 AM, Saturday 22nd of February 2020</h5>
+                <h2 class="mb-0">{{items.tournament.name}}</h2>
+                <h5 class="card-title text-uppercase text-muted mb-0">{{items.description}} - {{items.startTime}}</h5>
                 <br>
               </div>
-              <div class="col-md-2 text-right">
+              <div class="col-md-2 text-right" ng-if="currentStatus===1">
                 <h2 class="mb-0" style="color: red">LIVE</h2>
                 <br>
 
               </div>
-            </div>
 
-            <div class="row">
+              <div class="col-md-2 text-right" ng-if="currentStatus===0">
+                <img src="{{items.tournament.logo}}" width="100%">
+                <br>
+                <br>
+
+              </div>
+            </div>
+            <iframe width="100%" height="350" ng-src={{items.livestream.url}} frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen ng-if="items.activeStatus===1"></iframe>
+
+            <div class="row" ng-if="items.activeStatus===2">
               <div class="col-sm-2">
-                <img src="http://142.93.212.170/logos/osc.png" width="50px">
+                <img src="{{items.p1Team.team.logo}}" height="35px">
               </div>
               <div class="col-sm-6">
-                <span class="h2 font-weight-bold mb-0">Guene, Moussa</span>
+                <span class="h2 font-weight-bold mb-0">{{items.p1name}}</span>
               </div>
               <div class="col-sm-4 text-right">
-                <span class="h2 font-weight-bold mb-0">01:01.5 <span class="text-red">R</span></span>
+                <span class="h2 font-weight-bold mb-0">{{items.p1result}} <span class="text-red" ng-if="items.p1record">R</span><span class="text-white" ng-if="!items.p1record">R</span></span>
               </div>
             </div>
-            <br>
-            <div class="row">
+            <br ng-if="items.activeStatus===2">
+            <div class="row" ng-if="items.activeStatus===2">
               <div class="col-sm-2">
-                <img src="http://142.93.212.170/logos/acs.png" width="50px">
+                <img src="{{items.p2Team.team.logo}}" height="35px">
               </div>
               <div class="col-sm-6">
-                <span class="h2 font-weight-bold mb-0">Henley, Ayden</span>
+                <span class="h2 font-weight-bold mb-0">{{items.p2name}}</span>
               </div>
               <div class="col-sm-4 text-right">
-                <span class="h2 font-weight-bold mb-0">01:08.1 <span class="text-white">R</span></span>
+                <span class="h2 font-weight-bold mb-0">{{items.p2result}} <span class="text-red" ng-if="items.p2record">R</span><span class="text-white" ng-if="!items.p2record">R</span></span>
               </div>
             </div>
-            <br>
+            <br ng-if="items.activeStatus===2">
 
-            <div class="row">
+            <div class="row" ng-if="items.activeStatus===2">
               <div class="col-sm-2">
-                <img src="http://142.93.212.170/logos/ls.png" width="50px">
+                <img src="{{items.p3Team.team.logo}}" height="35px">
               </div>
               <div class="col-sm-6">
-                <span class="h2 font-weight-bold mb-0">Khadka, Biraj</span>
+                <span class="h2 font-weight-bold mb-0">{{items.p3name}}</span>
               </div>
               <div class="col-sm-4 text-right">
-                <span class="h2 font-weight-bold mb-0">01:09.1 <span class="text-white">R</span></span>
+                <span class="h2 font-weight-bold mb-0">{{items.p3result}} <span class="text-red" ng-if="items.p3record">R</span><span class="text-white" ng-if="!items.p3record">R</span></span>
               </div>
             </div>
-            <br>
+            <br ng-if="items.activeStatus===2">
 
-            <div class="row">
+            <div class="row" ng-if="items.activeStatus===2">
               <div class="col-sm-6">
-                <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">View Full Results
+                <button class="btn-primary" ng-click="watchLive(items.resultUrl)" style="width: 100%; border-radius: 10px; font-size: 14pt">View Full Results
                 </button>
               </div>
-<br>
+              <br>
               <br>
 
               <div class="col-sm-6">
-                <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">Replay Event Coverage
+                <button class="btn-primary" ng-click="watchLive(items.livestream.url)" style="width: 100%; border-radius: 10px; font-size: 14pt">Replay Event Coverage
                 </button>
               </div>
             </div>
+
           </div>
 
         </div>
       </div>
-        <div class="col-xl-6">
-          <div class="card">
-            <div class="card-header border-0">
-              <div class="row align-items-center">
-                <div class="col-md-10">
-                  <h2 class="mb-0">SAISA Track and Field 2020</h2>
-                  <h5 class="card-title text-uppercase text-muted mb-0">Boys 10-12 400m Finals - 08:40 AM, Saturday 22nd of February 2020</h5>
-                  <br>
-                </div>
-                <div class="col-md-2 text-right">
-                  <h2 class="mb-0" style="color: red">LIVE</h2>
-                  <br>
 
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/osc.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">Guene, Moussa</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">01:01.5 <span class="text-red">R</span></span>
-                </div>
-              </div>
-              <br>
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/acs.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">Henley, Ayden</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">01:08.1 <span class="text-white">R</span></span>
-                </div>
-              </div>
-              <br>
-
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/ls.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">Khadka, Biraj</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">01:09.1 <span class="text-white">R</span></span>
-                </div>
-              </div>
-              <br>
-
-              <div class="row">
-                <div class="col-sm-6">
-                  <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">View Full Results
-                  </button>
-                </div>
-                <br>
-                <br>
-
-                <div class="col-sm-6">
-                  <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">Replay Event Coverage
-                  </button>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-        <div class="col-xl-6">
-          <div class="card">
-            <div class="card-header border-0">
-              <div class="row align-items-center">
-                <div class="col-md-10">
-                  <h2 class="mb-0">SAISA Track and Field 2020</h2>
-                  <h5 class="card-title text-uppercase text-muted mb-0">Boys 10-12 400m Finals - 08:40 AM, Saturday 22nd of February 2020</h5>
-                  <br>
-                </div>
-                <div class="col-md-2 text-right">
-                  <h2 class="mb-0" style="color: red">LIVE</h2>
-                  <br>
-
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/osc.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">Guene, Moussa</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">01:01.5 <span class="text-red">R</span></span>
-                </div>
-              </div>
-              <br>
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/acs.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">Henley, Ayden</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">01:08.1 <span class="text-white">R</span></span>
-                </div>
-              </div>
-              <br>
-
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/ls.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">Khadka, Biraj</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">01:09.1 <span class="text-white">R</span></span>
-                </div>
-              </div>
-              <br>
-
-              <div class="row">
-                <div class="col-sm-6">
-                  <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">View Full Results
-                  </button>
-                </div>
-                <br>
-                <br>
-
-                <div class="col-sm-6">
-                  <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">Replay Event Coverage
-                  </button>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-        <div class="col-xl-6">
-          <div class="card">
-            <div class="card-header border-0">
-              <div class="row align-items-center">
-                <div class="col-md-10">
-                  <h2 class="mb-0">SAISA Track and Field 2020</h2>
-                  <h5 class="card-title text-uppercase text-muted mb-0">Boys 10-12 400m Finals - 08:40 AM, Saturday 22nd of February 2020</h5>
-                  <br>
-                </div>
-                <div class="col-md-2 text-right">
-                  <h2 class="mb-0" style="color: red">LIVE</h2>
-                  <br>
-
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/osc.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">Guene, Moussa</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">01:01.5 <span class="text-red">R</span></span>
-                </div>
-              </div>
-              <br>
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/acs.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">Henley, Ayden</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">01:08.1 <span class="text-white">R</span></span>
-                </div>
-              </div>
-              <br>
-
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/ls.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">Khadka, Biraj</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">01:09.1 <span class="text-white">R</span></span>
-                </div>
-              </div>
-              <br>
-
-              <div class="row">
-                <div class="col-sm-6">
-                  <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">View Full Results
-                  </button>
-                </div>
-                <br>
-                <br>
-
-                <div class="col-sm-6">
-                  <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">Replay Event Coverage
-                  </button>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-        <div class="col-xl-6">
-          <div class="card">
-            <div class="card-header border-0">
-              <div class="row align-items-center">
-                <div class="col-md-10">
-                  <h2 class="mb-0">SAISA Track and Field 2020</h2>
-                  <h5 class="card-title text-uppercase text-muted mb-0">Boys 10-12 400m Finals - 08:40 AM, Saturday 22nd of February 2020</h5>
-                  <br>
-                </div>
-                <div class="col-md-2 text-right">
-                  <h2 class="mb-0" style="color: red">LIVE</h2>
-                  <br>
-
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/osc.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">Guene, Moussa</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">01:01.5 <span class="text-red">R</span></span>
-                </div>
-              </div>
-              <br>
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/acs.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">Henley, Ayden</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">01:08.1 <span class="text-white">R</span></span>
-                </div>
-              </div>
-              <br>
-
-              <div class="row">
-                <div class="col-sm-2">
-                  <img src="http://142.93.212.170/logos/ls.png" width="50px">
-                </div>
-                <div class="col-sm-6">
-                  <span class="h2 font-weight-bold mb-0">Khadka, Biraj</span>
-                </div>
-                <div class="col-sm-4 text-right">
-                  <span class="h2 font-weight-bold mb-0">01:09.1 <span class="text-white">R</span></span>
-                </div>
-              </div>
-              <br>
-
-              <div class="row">
-                <div class="col-sm-6">
-                  <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">View Full Results
-                  </button>
-                </div>
-                <br>
-                <br>
-
-                <div class="col-sm-6">
-                  <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">Replay Event Coverage
-                  </button>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
 
 
 

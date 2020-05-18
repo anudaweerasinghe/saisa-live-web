@@ -147,3 +147,98 @@ myApp.controller('livestreams-controller', function ($scope, $http, $sce) {
     };
 
 });
+
+myApp.controller('meets-controller', function ($scope, $http, $sce) {
+
+    $scope.currentStatus = 2;
+
+    $http({
+        method: 'GET',
+        url: baseUrl+'/meets?activeStatus=1'
+    }).then(function successCallback(response) {
+
+        $scope.liveMeets=response.data;
+
+        for(var i=0; i<$scope.liveMeets.length;i++){
+
+            let ts = new Date($scope.liveMeets[i].startTime*1000);
+
+            $scope.liveMeets[i].startTime = ts.toLocaleString();
+
+            $scope.liveMeets[i].livestream.url = $sce.trustAsResourceUrl("https://www.youtube.com/embed/"+$scope.liveMeets[i].livestream.url.replace("https://youtu.be/",""));
+
+        }
+
+
+    }, function errorCallback(response) {
+        // The next bit of code is asynchronously tricky.
+        alert("Error Retrieving Data");
+
+    });
+
+    $http({
+        method: 'GET',
+        url: baseUrl+'/meets?activeStatus=0'
+    }).then(function successCallback(response) {
+
+        $scope.upcomingMeets=response.data;
+        for(var i=0; i<$scope.upcomingMeets.length;i++){
+
+            let ts = new Date($scope.upcomingMeets[i].startTime*1000);
+
+
+            $scope.upcomingMeets[i].startTime = ts.toLocaleString();
+        }
+
+    }, function errorCallback(response) {
+        // The next bit of code is asynchronously tricky.
+        alert("Error Retrieving Data");
+
+    });
+
+    $http({
+        method: 'GET',
+        url: baseUrl+'/meets?activeStatus=2'
+    }).then(function successCallback(response) {
+
+        $scope.completedMeets=response.data;
+        $scope.completedMeets=response.data;
+        for(var i=0; i<$scope.completedMeets.length;i++){
+
+            let ts = new Date($scope.completedMeets[i].startTime*1000);
+
+
+            $scope.completedMeets[i].startTime = ts.toLocaleString();
+        }
+
+        $scope.meets = $scope.completedMeets;
+
+    }, function errorCallback(response) {
+        // The next bit of code is asynchronously tricky.
+        alert("Error Retrieving Data");
+
+    });
+
+    $scope.watchLive = function (url) {
+        window.open(url);
+
+    };
+
+    $scope.changeStatus = function(newStatus){
+
+        $scope.currentStatus = newStatus;
+
+        if(newStatus===1){
+            $scope.meets = $scope.liveMeets;
+        }else if(newStatus===0){
+            $scope.meets = $scope.upcomingMeets;
+        }else{
+            $scope.meets = $scope.completedMeets;
+        }
+
+
+    }
+
+
+
+});
