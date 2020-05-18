@@ -6,6 +6,10 @@ myApp.controller('scores-controller', function ($scope, $http) {
 
      $scope.currentStatus = 1;
 
+    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+        window.location.href = "http://osc.lk/saisa/live-mobile";
+    }
+
     $http({
         method: 'GET',
         url: baseUrl+'/games?activeStatus=1'
@@ -112,6 +116,10 @@ myApp.controller('scores-controller', function ($scope, $http) {
 
 myApp.controller('livestreams-controller', function ($scope, $http, $sce) {
 
+    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+        window.location.href = "http://osc.lk/saisa/live-mobile";
+    }
+
     $scope.live = true;
     $scope.pastFootage = [];
 
@@ -174,7 +182,9 @@ myApp.controller('livestreams-controller', function ($scope, $http, $sce) {
 myApp.controller('meets-controller', function ($scope, $http, $sce) {
 
     $scope.currentStatus = 2;
-
+    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+        window.location.href = "http://osc.lk/saisa/live-mobile";
+    }
     $http({
         method: 'GET',
         url: baseUrl+'/meets?activeStatus=1'
@@ -269,7 +279,9 @@ myApp.controller('meets-controller', function ($scope, $http, $sce) {
 myApp.controller('events-controller', function ($scope, $http, $sce) {
 
     $scope.live = true;
-
+    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+        window.location.href = "http://osc.lk/saisa/live-mobile";
+    }
     $http({
         method: 'GET',
         url: baseUrl+'/tournaments?tournamentId=0'
@@ -350,7 +362,9 @@ myApp.controller('media-controller', function ($scope, $http) {
 
     $scope.currentStatus = 1;
     $scope.accessGranted = false;
-
+    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+        window.location.href = "http://osc.lk/saisa/live-mobile";
+    }
     $http({
         method: 'GET',
         url: baseUrl+'/media?tournamentId=0&type=2'
