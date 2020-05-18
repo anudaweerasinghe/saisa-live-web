@@ -242,3 +242,77 @@ myApp.controller('meets-controller', function ($scope, $http, $sce) {
 
 
 });
+
+myApp.controller('events-controller', function ($scope, $http, $sce) {
+
+    $scope.live = true;
+
+    $http({
+        method: 'GET',
+        url: baseUrl+'/tournaments?tournamentId=0'
+    }).then(function successCallback(response) {
+
+        $scope.liveEvents=response.data;
+
+        for(var i=0; i<$scope.liveEvents.length;i++){
+            let ts = new Date($scope.liveEvents[i].startDate*1000);
+
+            $scope.liveEvents[i].startDate = ts.toLocaleDateString();
+        }
+        $scope.events = $scope.liveEvents;
+
+    }, function errorCallback(response) {
+        // The next bit of code is asynchronously tricky.
+        alert("Error Retrieving Data");
+
+    });
+
+    $http({
+        method: 'GET',
+        url: baseUrl+'/tournaments/inactive'
+    }).then(function successCallback(response) {
+
+        $scope.archivedEvents=response.data;
+
+        for(var i=0; i<$scope.archivedEvents.length;i++){
+
+            let ts = new Date($scope.archivedEvents[i].startDate*1000);
+
+            $scope.archivedEvents[i].startDate = ts.toLocaleDateString();        }
+
+    }, function errorCallback(response) {
+        // The next bit of code is asynchronously tricky.
+        alert("Error Retrieving Data");
+
+    });
+
+    $scope.changeStatus = function(){
+
+        if(!$scope.live){
+            $scope.live=true;
+            $scope.events = $scope.liveEvents;
+        }else{
+            $scope.live=false;
+            $scope.events = $scope.archivedEvents;
+
+        }
+    };
+
+    $scope.activateModal = function(tournamentId){
+
+        $http({
+            method: 'GET',
+            url: baseUrl+'/tournaments/participants/?tournamentId='+tournamentId
+        }).then(function successCallback(response) {
+            $scope.standingsData = response.data;
+
+
+        }, function errorCallback(response) {
+            // The next bit of code is asynchronously tricky.
+            alert("Error Retrieving Data");
+
+        });
+
+    };
+
+});

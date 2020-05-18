@@ -35,8 +35,9 @@
   <link rel="stylesheet" href="assets/css/argon.css?v=1.2.0" type="text/css">
 </head>
 
-<body>
+<body  ng-app="myApp" ng-controller="events-controller">
   <!-- Sidenav -->
+
   <nav class="sidenav navbar navbar-vertical  fixed-left  navbar-expand-xs navbar-brand bg-white" id="sidenav-main">
     <div class="scrollbar-inner">
       <!-- Brand -->
@@ -127,11 +128,14 @@
                 </ol>
               </nav>
             </div>
-            <div class="col-lg-6 col-5 text-right">
-              <a href="#" class="btn btn-sm btn-neutral">Live Now</a>
-              <a href="#" class="btn btn-sm btn-primary">Archives</a>
+            <div class="col-lg-6 col-5 text-right" ng-if="live">
+              <a href="#" class="btn btn-sm btn-neutral" ng-click="changeStatus()">Live Now</a>
+              <a href="#" class="btn btn-sm btn-primary" ng-click="changeStatus()">Archives</a>
+            </div>
 
-
+            <div class="col-lg-6 col-5 text-right" ng-if="!live">
+              <a href="#" class="btn btn-sm btn-primary" ng-click="changeStatus()">Live Now</a>
+              <a href="#" class="btn btn-sm btn-neutral" ng-click="changeStatus()">Archives</a>
             </div>
           </div>
           <!-- Card stats -->
@@ -144,18 +148,18 @@
     <!-- Page content -->
     <div class="container-fluid mt--6">
       <div class="row">
-        <div class="col-xl-4">
+        <div class="col-xl-4" ng-repeat="items in events | orderBy: reverse:true">
           <div class="card">
             <div class="card-header border-0">
               <div class="row align-items-center">
                 <div class="col-md-9">
-                  <h2 class="mb-0">SAISA Track and Field 2020</h2>
-                  <h5 class="card-title text-uppercase text-muted mb-0">Thursday, 20 February 2020 - Chennai, India</h5>
+                  <h2 class="mb-0">{{items.name}}</h2>
+                  <h5 class="card-title text-uppercase text-muted mb-0">{{items.startDate}} - {{items.location}}</h5>
 
                   <br>
                 </div>
                 <div class="col-md-3 text-right">
-                  <img src="https://drive.google.com/thumbnail?id=1jc8bHAuc653Q-wPAowKYZM5s3NsyhKVI" width="100%">
+                  <img src="{{items.logo}}" height="50px">
                   <br>
                   <br>
 
@@ -163,86 +167,8 @@
               </div>
 
 
-              <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">View Standings</button>
-
-
-            </div>
-
-          </div>
-        </div>
-        <div class="col-xl-4">
-          <div class="card">
-            <div class="card-header border-0">
-              <div class="row align-items-center">
-                <div class="col-md-9">
-                  <h2 class="mb-0">SAISA Track and Field 2020</h2>
-                  <h5 class="card-title text-uppercase text-muted mb-0">Thursday, 20 February 2020 - Chennai, India</h5>
-
-                  <br>
-                </div>
-                <div class="col-md-3 text-right">
-                  <img src="https://drive.google.com/thumbnail?id=1jc8bHAuc653Q-wPAowKYZM5s3NsyhKVI" width="100%">
-                  <br>
-                  <br>
-
-                </div>
-              </div>
-
-
-              <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">View Standings</button>
-
-
-            </div>
-
-          </div>
-        </div>
-        <div class="col-xl-4">
-          <div class="card">
-            <div class="card-header border-0">
-              <div class="row align-items-center">
-                <div class="col-md-9">
-                  <h2 class="mb-0">SAISA Track and Field 2020</h2>
-                  <h5 class="card-title text-uppercase text-muted mb-0">Thursday, 20 February 2020 - Chennai, India</h5>
-
-                  <br>
-                </div>
-                <div class="col-md-3 text-right">
-                  <img src="https://drive.google.com/thumbnail?id=1jc8bHAuc653Q-wPAowKYZM5s3NsyhKVI" width="100%">
-                  <br>
-                  <br>
-
-                </div>
-              </div>
-
-
-              <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">View Standings</button>
-
-
-            </div>
-
-          </div>
-        </div>
-        <div class="col-xl-4">
-          <div class="card">
-            <div class="card-header border-0">
-              <div class="row align-items-center">
-                <div class="col-md-9">
-                  <h2 class="mb-0">SAISA Track and Field 2020</h2>
-                  <h5 class="card-title text-uppercase text-muted mb-0">Thursday, 20 February 2020 - Chennai, India</h5>
-
-                  <br>
-                </div>
-                <div class="col-md-3 text-right">
-                  <img src="https://drive.google.com/thumbnail?id=1jc8bHAuc653Q-wPAowKYZM5s3NsyhKVI" width="100%">
-                  <br>
-                  <br>
-
-                </div>
-              </div>
-
-
-              <button class="btn-primary" style="width: 100%; border-radius: 10px; font-size: 14pt">View Standings</button>
-
+              <button class="btn-primary" ng-click="activateModal(items.id)" ng-if="items.standingsActive" style="width: 100%; border-radius: 10px; font-size: 14pt" data-toggle="modal" data-target="#exampleModal" >View Standings</button>
+              <br ng-if="!items.standingsActive">
 
             </div>
 
@@ -252,6 +178,84 @@
 
 
 
+
+      </div>
+      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title" id="exampleModalLabel">{{standingsData.name}} </h1>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body" ng-repeat="items in standingsData.pools">
+              <div class="table-responsive">
+                <div class="row align-items-center">
+                  <div class="col">
+                    <h1 class="mb-0" ng-if="standingsData.poolsActive" >Pool {{items.pool}} Standings</h1>
+                    <h1 class="mb-0" ng-if="!standingsData.poolsActive" >Standings</h1>
+
+                  </div>
+
+                </div>
+                <br>
+                <!-- Projects table -->
+                <table class="table align-items-center table-flush">
+                  <thead class="thead-light">
+                  <tr>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col" ng-if="standingsData.scoresActive">Games</th>
+                    <th scope="col" ng-if="standingsData.scoresActive">Wins</th>
+                    <th scope="col" ng-if="standingsData.scoresActive">Losses</th>
+                    <th scope="col" ng-if="standingsData.scoresActive">NRs</th>
+                    <th scope="col">Points</th>
+
+                    <th scope="col">Standing</th>
+
+
+                  </tr>
+                  </thead>
+                  <tbody>
+
+
+                  <tr ng-repeat="item in items.participants | orderBy:'standing'">
+                    <th scope="row">
+                      <img src="{{item.team.logo}}" height="25px">
+                    </th>
+                    <th scope="row">
+                      {{item.team.name}}
+                    </th>
+                    <td ng-if="standingsData.scoresActive">
+                      {{item.games}}
+                    </td>
+                    <td ng-if="standingsData.scoresActive">
+                      {{item.wins}}
+                    </td>
+                    <td ng-if="standingsData.scoresActive">
+                      {{item.losses}}
+                    </td>
+                    <td ng-if="standingsData.scoresActive">
+                    {{item.ties}}
+                  </td>
+                    <td>
+                      {{item.points}}
+                    </td>
+                    <td>
+                      {{item.standing}}
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" data-dismiss="modal">Back</button>
+            </div>
+          </div>
+        </div>
       </div>
       <!-- Footer -->
       <footer class="footer pt-0">
